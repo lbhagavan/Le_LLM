@@ -55,7 +55,7 @@ def response_generator(query):
   query_engine = index.as_query_engine()
 
 response = query_engine.query(query)
-print(response)
+#print(response)
 return response
 
 st.title("FireBot chat")
