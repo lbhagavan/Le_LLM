@@ -12,6 +12,9 @@ import os
 os.environ["OPENAI_API_KEY"] = open_ai_key
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+
 import chromedriver_autoinstaller
 from llama_index.core import VectorStoreIndex, download_loader
 from llama_index.readers.web import WholeSiteReader
