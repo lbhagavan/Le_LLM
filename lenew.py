@@ -22,10 +22,7 @@ from llama_index.readers.web import WholeSiteReader
 
 service = Service(ChromeDriverManager().install())
 
-
-# Streamed response emulator
-def response_generator(query):
-  # Initialize ChromeDriver and ensure compatibility
+ # Initialize ChromeDriver and ensure compatibility
   #chromedriver_autoinstaller.install()  # Automatically install the compatible chromedr
   #configure chrome options
   options = webdriver.ChromeOptions()
@@ -46,15 +43,17 @@ def response_generator(query):
      documents = scraper.load_data(
         base_url="https://www.fire.ca.gov/"
      )  # Example base URL
+   finally:
+     driver.quit()
+# Streamed response emulator
+def response_generator(query):
+ 
      index = VectorStoreIndex.from_documents(documents)
      query_engine = index.as_query_engine()
      response = query_engine.query(query)
   except Exception as e:
         # Log or handle the exception
-        response = f"An error occurred: {e}"
-  
-  finally:
-     driver.quit()
+        response = f"An error occurred: {e}" 
   return response
 
 st.title("FireBot chat")
