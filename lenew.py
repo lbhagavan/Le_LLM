@@ -5,8 +5,9 @@ import time
 #from google.colab import userdata
 #open_ai_key = userdata.get('open_ai_key')
 from openai import OpenAI
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 #client = OpenAI(api_key=open_ai_key)
-open_ai_key = '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'
+
 import os
 
 os.environ["OPENAI_API_KEY"] = open_ai_key
