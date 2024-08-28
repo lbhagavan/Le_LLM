@@ -15,11 +15,12 @@ from selenium.webdriver.chrome.options import Options
 import chromedriver_autoinstaller
 from llama_index.core import VectorStoreIndex, download_loader
 from llama_index.readers.web import WholeSiteReader
-# Initialize ChromeDriver and ensure compatibility
-chromedriver_autoinstaller.install()  # Automatically install the compatible chromedr
+
 
 # Streamed response emulator
 def response_generator(query):
+  # Initialize ChromeDriver and ensure compatibility
+  chromedriver_autoinstaller.install()  # Automatically install the compatible chromedr
   #configure chrome options
   options = webdriver.ChromeOptions()
   options.add_argument('--headless')  # Run Chrome in headless mode (without GUI)
