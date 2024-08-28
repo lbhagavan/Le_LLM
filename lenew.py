@@ -2,8 +2,8 @@ import streamlit as st
 import random
 import time
 
-from google.colab import userdata
-open_ai_key = userdata.get('open_ai_key')
+#from google.colab import userdata
+#open_ai_key = userdata.get('open_ai_key')
 from openai import OpenAI
 #client = OpenAI(api_key=open_ai_key)
 client = OpenAI(api_key=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)
