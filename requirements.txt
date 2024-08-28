@@ -3,4 +3,4 @@ openai
 llama-index
 llama-index-readers-web
 selenium
-webdriver-manager
+webdriver_manager
