@@ -10,7 +10,7 @@ client = OpenAI(api_key=st.secrets["open_ai_key"])
 
 import os
 
-os.environ["OPENAI_API_KEY"] = open_ai_key
+#os.environ["OPENAI_API_KEY"] = open_ai_key
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
