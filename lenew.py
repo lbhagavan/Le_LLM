@@ -16,17 +16,20 @@ import chromedriver_autoinstaller
 from llama_index.core import VectorStoreIndex, download_loader
 from llama_index.readers.web import WholeSiteReader
 
+service = Service(ChromeDriverManager().install())
+
 
 # Streamed response emulator
 def response_generator(query):
   # Initialize ChromeDriver and ensure compatibility
-  chromedriver_autoinstaller.install()  # Automatically install the compatible chromedr
+  #chromedriver_autoinstaller.install()  # Automatically install the compatible chromedr
   #configure chrome options
   options = webdriver.ChromeOptions()
   options.add_argument('--headless')  # Run Chrome in headless mode (without GUI)
   options.add_argument('--no-sandbox')
   options.add_argument('--disable-dev-shm-usage')
-  driver = webdriver.Chrome(options=options) #initialize ChromeDriver
+  #driver = webdriver.Chrome(options=options) #initialize ChromeDriver
+  driver = webdriver.Chrome(service=service, options=options)
   
   # Initialize the scraper with a prefix URL and maximum depth
   try:
