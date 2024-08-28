@@ -3,21 +3,20 @@ import random
 import time
 
 from google.colab import userdata
-  open_ai_key = userdata.get('open_ai_key')
+open_ai_key = userdata.get('open_ai_key')
 from openai import OpenAI
-  #client = OpenAI(api_key=open_ai_key)
-  client = OpenAI(api_key=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)
- import os
-  os.environ["OPENAI_API_KEY"] = open_ai_key
-  from selenium import webdriver
-  from selenium.webdriver.chrome.options import Options
-  from llama_index.core import VectorStoreIndex, download_loader
-  from llama_index.readers.web import WholeSiteReader
-  import chromedriver_autoinstaller
+#client = OpenAI(api_key=open_ai_key)
+client = OpenAI(api_key=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)
+import os
+os.environ["OPENAI_API_KEY"] = open_ai_key
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from llama_index.core import VectorStoreIndex, download_loader
+from llama_index.readers.web import WholeSiteReader
+import chromedriver_autoinstaller
 
 # Streamed response emulator
 def response_generator(query):
-  
   chromedriver_autoinstaller.install()  # Install the compatible chromedriver automatically
   options = webdriver.ChromeOptions()
   options.add_argument('--headless')  # Run Chrome in headless mode (without GUI)
