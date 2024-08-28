@@ -6,8 +6,9 @@ import time
 #open_ai_key = userdata.get('open_ai_key')
 from openai import OpenAI
 #client = OpenAI(api_key=open_ai_key)
-client = OpenAI(api_key=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)
+#client = OpenAI(api_key=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)
 import os
+open_ai_key = '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'
 os.environ["OPENAI_API_KEY"] = open_ai_key
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
