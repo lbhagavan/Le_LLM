@@ -15,11 +15,11 @@ from selenium.webdriver.chrome.options import Options
 import chromedriver_autoinstaller
 from llama_index.core import VectorStoreIndex, download_loader
 from llama_index.readers.web import WholeSiteReader
-
+# Initialize ChromeDriver and ensure compatibility
+chromedriver_autoinstaller.install()  # Automatically install the compatible chromedr
 
 # Streamed response emulator
 def response_generator(query):
-  chromedriver_autoinstaller.install()  # Install the compatible chromedriver automatically
   #configure chrome options
   options = webdriver.ChromeOptions()
   options.add_argument('--headless')  # Run Chrome in headless mode (without GUI)
@@ -41,6 +41,9 @@ def response_generator(query):
      index = VectorStoreIndex.from_documents(documents)
      query_engine = index.as_query_engine()
      response = query_engine.query(query)
+  except Exception as e:
+        # Log or handle the exception
+        response = f"An error occurred: {e}"
   
   finally:
      driver.quit()
