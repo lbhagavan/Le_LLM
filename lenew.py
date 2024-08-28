@@ -33,9 +33,9 @@ def response_generator(query):
       max_depth=6,
       driver=driver # Pass the configured driver to the WholeSiteReader
      )
-  # Start scraping from a base URL
-    documents = scraper.load_data(
-      base_url="https://www.fire.ca.gov/"
+      # Start scraping from a base URL
+     documents = scraper.load_data(
+        base_url="https://www.fire.ca.gov/"
      )  # Example base URL
      index = VectorStoreIndex.from_documents(documents)
      query_engine = index.as_query_engine()
