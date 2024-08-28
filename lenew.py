@@ -1,61 +1,88 @@
 import streamlit as st
-import random
-import time
-
-#from google.colab import userdata
-#open_ai_key = userdata.get('open_ai_key')
 from openai import OpenAI
-client = OpenAI(api_key=st.secrets["open_ai_key"])
-#client = OpenAI(api_key=open_ai_key)
-
-import os
-
-#os.environ["OPENAI_API_KEY"] = open_ai_key
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
-
-import chromedriver_autoinstaller
-from llama_index.core import VectorStoreIndex, download_loader
+from llama_index.core import VectorStoreIndex
 from llama_index.readers.web import WholeSiteReader
+from llama_index.core import Document
+import openai
 
-service = Service(ChromeDriverManager().install())
+# Initialize OpenAI API Client
+openai.api_key = st.secrets["open_ai_key"]
+# client = OpenAI()
 
+import streamlit as st
+import requests
+from bs4 import BeautifulSoup
+from urllib.parse import urljoin
 
-# Streamed response emulator
+def scrape_data(url, prefix, max_depth=6, current_depth=0, visited=None):
+    # st.write(Document.__init__.__annotations__)
+    if visited is None:
+        visited = set()  # Initialize the set of visited URLs
+
+    if current_depth > max_depth:
+        return []
+
+    if url in visited:
+        return []  # Avoid revisiting the same URL
+
+    visited.add(url)
+    # st.write(url)
+    documents = []
+
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    }
+
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()  # Raise an exception for HTTP errors
+        soup = BeautifulSoup(response.content, "html.parser")
+
+        # Extract text data from all paragraphs
+        page_content = [p.get_text().strip() for p in soup.find_all('p') if p.get_text().strip()]
+
+        # Convert each piece of text data to a Document object
+        for text in page_content:
+            doc = Document(text=text, metadata={"url": url, "depth": current_depth})
+            documents.append(doc)
+
+        # Find all links on the page to follow
+        for link in soup.find_all('a', href=True):
+            full_url = urljoin(url, link['href'])
+            if full_url.startswith(prefix):
+                documents.extend(scrape_data(full_url, prefix, max_depth, current_depth + 1, visited))
+
+    except requests.RequestException as e:
+        st.write(f"An error occurred while scraping {url}: {e}")
+
+    return documents
+
+# Set the base URL and prefix for the scraper
+base_url = "https://www.fire.ca.gov/"
+prefix = "https://www.fire.ca.gov/"
+
+# Scrape data up to a depth of 6
+documents = scrape_data(base_url, prefix, max_depth=6)
+index = VectorStoreIndex.from_documents(documents)
+
+# st.write("Scraped Data:")
+# st.write(documents)
+
 def response_generator(query):
-  # Initialize ChromeDriver and ensure compatibility
-  #chromedriver_autoinstaller.install()  # Automatically install the compatible chromedr
-  #configure chrome options
-  options = webdriver.ChromeOptions()
-  options.add_argument('--headless')  # Run Chrome in headless mode (without GUI)
-  options.add_argument('--no-sandbox')
-  options.add_argument('--disable-dev-shm-usage')
-  #driver = webdriver.Chrome(options=options) #initialize ChromeDriver
-  driver = webdriver.Chrome(service=service, options=options)
-  
-  # Initialize the scraper with a prefix URL and maximum depth
-  try:
-     scraper = WholeSiteReader(
-      prefix="https://www.fire.ca.gov/",  # Example prefix
-      max_depth=6,
-      driver=driver # Pass the configured driver to the WholeSiteReader
-     )
-      # Start scraping from a base URL
-     documents = scraper.load_data(
-        base_url="https://www.fire.ca.gov/"
-     )  # Example base URL
-     index = VectorStoreIndex.from_documents(documents)
-     query_engine = index.as_query_engine()
-     response = query_engine.query(query)
-  except Exception as e:
+    try:
+        # Create an index from the documents
+        query_engine = index.as_query_engine()
+        response = query_engine.query(query)
+
+    except Exception as e:
         # Log or handle the exception
         response = f"An error occurred: {e}"
-  
-  finally:
-     driver.quit()
-  return response
+
+    return response
 
 st.title("FireBot chat")
 
@@ -72,16 +99,18 @@ for message in st.session_state.messages:
 if prompt := st.chat_input("What is up?"):
     # Add user message to chat history
     st.session_state.messages.append({"role": "user", "content": prompt})
+    
     # Display user message in chat message container
     with st.chat_message("user"):
-         st.markdown(prompt)
+        st.markdown(prompt)
+    
     # Generate and display assistant response
+    # st.write('Before Response generator')
     response = response_generator(prompt)
   
     # Display assistant response in chat message container
     with st.chat_message("assistant"):
-        #response = st.write_stream(response_generator(message["content"]))
-         st.markdown(response)
+        st.markdown(response)
+    
     # Add assistant response to chat history
     st.session_state.messages.append({"role": "assistant", "content": response})
-
