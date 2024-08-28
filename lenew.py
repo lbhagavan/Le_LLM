@@ -11,13 +11,15 @@ import os
 os.environ["OPENAI_API_KEY"] = open_ai_key
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+import chromedriver_autoinstaller
 from llama_index.core import VectorStoreIndex, download_loader
 from llama_index.readers.web import WholeSiteReader
-import chromedriver_autoinstaller
+
 
 # Streamed response emulator
 def response_generator(query):
   chromedriver_autoinstaller.install()  # Install the compatible chromedriver automatically
+  #configure chrome options
   options = webdriver.ChromeOptions()
   options.add_argument('--headless')  # Run Chrome in headless mode (without GUI)
   options.add_argument('--no-sandbox')
@@ -25,21 +27,23 @@ def response_generator(query):
   driver = webdriver.Chrome(options=options) #initialize ChromeDriver
   
   # Initialize the scraper with a prefix URL and maximum depth
-  scraper = WholeSiteReader(
+  try:
+     scraper = WholeSiteReader(
       prefix="https://www.fire.ca.gov/",  # Example prefix
       max_depth=6,
       driver=driver # Pass the configured driver to the WholeSiteReader
-  )
+     )
   # Start scraping from a base URL
-  documents = scraper.load_data(
+    documents = scraper.load_data(
       base_url="https://www.fire.ca.gov/"
-  )  # Example base URL
-  index = VectorStoreIndex.from_documents(documents)
-  query_engine = index.as_query_engine()
-
-  response = query_engine.query(query)
-  print(response)
-return response
+     )  # Example base URL
+     index = VectorStoreIndex.from_documents(documents)
+     query_engine = index.as_query_engine()
+     response = query_engine.query(query)
+  
+  finally:
+     driver.quit()
+  return response
 
 st.title("FireBot chat")
 
